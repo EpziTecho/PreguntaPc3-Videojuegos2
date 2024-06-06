@@ -1,6 +1,6 @@
 class Escena extends Phaser.Scene {
     preload() {
-        this.load.image("fondo", "img/fondo.jpg");
+        this.load.image("fondo", "img/fondo2.png");
         this.load.spritesheet("bola", "img/bola.png", {
             frameWidth: 100,
             frameHeight: 100,
