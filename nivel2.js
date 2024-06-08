@@ -1,4 +1,8 @@
-class Escena extends Phaser.Scene {
+class Nivel2 extends Phaser.Scene {
+    constructor() {
+        super({ key: "Nivel2" });
+        this.limitePuntos = 5;
+    }
     preload() {
         this.load.image("fondo", "img/fondo2.png");
         this.load.spritesheet("bola", "img/bola.png", {
@@ -252,7 +256,7 @@ const config = {
     type: Phaser.AUTO,
     width: 960,
     height: 640,
-    scene: Escena,
+    scene: Nivel2,
     physics: {
         default: "arcade",
     },
