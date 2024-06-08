@@ -15,6 +15,7 @@ class Escena extends Phaser.Scene {
         this.load.image("leftbtn", "img/flecha.png");
         this.load.image("mano2", "img/mano2.png");
         this.load.audio("audio", "sound/pingpongmusic.mp3");
+        this.load.audio("rebote", "sound/bounce.mp3");
     }
 
     create() {
@@ -42,7 +43,7 @@ class Escena extends Phaser.Scene {
         this.mano1.body.immovable = true;
         this.bola.setBounce(10);
         this.mano1.setSize(60, 250);
-        this.physics.add.collider(this.bola, this.mano1);
+        // this.physics.add.collider(this.bola, this.mano1);
         this.mano1.setCollideWorldBounds(true);
 
         //segudo jugador
@@ -51,8 +52,27 @@ class Escena extends Phaser.Scene {
         this.mano2.body.immovable = true;
         this.bola.setBounce(10);
         this.mano2.setSize(60, 250);
-        this.physics.add.collider(this.bola, this.mano2);
+        // this.physics.add.collider(this.bola, this.mano2);
         this.mano2.setCollideWorldBounds(true);
+
+        // Añadir audio de rebote
+        this.reboteSound = this.sound.add("rebote");
+
+        // Configurar colisiones
+        this.physics.add.collider(
+            this.bola,
+            this.mano1,
+            this.playReboteSound,
+            null,
+            this
+        );
+        this.physics.add.collider(
+            this.bola,
+            this.mano2,
+            this.playReboteSound,
+            null,
+            this
+        );
 
         const velocidad = 500;
         let anguloInicial = (Math.random() * Math.PI) / 2 + Math.PI / 4;
@@ -101,7 +121,10 @@ class Escena extends Phaser.Scene {
             this.audio.resume();
         }
     }
-
+    playReboteSound(bola, mano) {
+        console.log("Rebote!"); // Verifica que se imprima esto en la consola al colisionar
+        this.reboteSound.play();
+    }
     update() {
         this.bola.rotation += 0.01;
 
@@ -166,8 +189,20 @@ class Escena extends Phaser.Scene {
 
         this.bola.body.velocity.x = vx;
         this.bola.body.velocity.y = vy;
-        this.physics.add.collider(this.bola, this.mano1);
-        this.physics.add.collider(this.bola, this.mano2);
+        this.physics.add.collider(
+            this.bola,
+            this.mano1,
+            this.playReboteSound,
+            null,
+            this
+        );
+        this.physics.add.collider(
+            this.bola,
+            this.mano2,
+            this.playReboteSound,
+            null,
+            this
+        );
         this.alguienGano = false;
     }
 
@@ -266,6 +301,7 @@ class Nivel2 extends Phaser.Scene {
         this.load.image("leftbtn", "img/flecha.png");
         this.load.image("pong", "img/pong.png");
         this.load.audio("audio", "sound/pingpongmusic.mp3");
+        this.load.audio("rebote", "sound/bounce.mp3");
     }
 
     create() {
@@ -297,8 +333,8 @@ class Nivel2 extends Phaser.Scene {
         this.mano1.body.immovable = true;
         this.bola.setBounce(10);
         this.mano1.setSize(60, 250);
-        this.physics.add.collider(this.bola, this.mano1);
-        this.physics.add.collider(this.bola2, this.mano1);
+        // this.physics.add.collider(this.bola, this.mano1);
+        // this.physics.add.collider(this.bola2, this.mano1);
         this.mano1.setCollideWorldBounds(true);
 
         //segudo jugador
@@ -307,10 +343,43 @@ class Nivel2 extends Phaser.Scene {
         this.mano2.body.immovable = true;
         this.bola.setBounce(10);
         this.mano2.setSize(60, 250);
-        this.physics.add.collider(this.bola, this.mano2);
-        this.physics.add.collider(this.bola2, this.mano2);
+        // this.physics.add.collider(this.bola, this.mano2);
+        // this.physics.add.collider(this.bola2, this.mano2);
         this.mano2.setCollideWorldBounds(true);
 
+        // Añadir audio de rebote
+        this.reboteSound = this.sound.add("rebote");
+        // Configurar colisiones
+        this.physics.add.collider(
+            this.bola,
+            this.mano1,
+            this.playReboteSound,
+            null,
+            this
+        );
+        this.physics.add.collider(
+            this.bola,
+            this.mano2,
+            this.playReboteSound,
+            null,
+            this
+        );
+
+        // Configurar colisiones
+        this.physics.add.collider(
+            this.bola2,
+            this.mano1,
+            this.playReboteSound,
+            null,
+            this
+        );
+        this.physics.add.collider(
+            this.bola2,
+            this.mano2,
+            this.playReboteSound,
+            null,
+            this
+        );
         const velocidad = 500;
         let anguloInicial = (Math.random() * Math.PI) / 2 + Math.PI / 4;
         const derechaOIzq = Math.floor(Math.random() * 2);
@@ -362,7 +431,10 @@ class Nivel2 extends Phaser.Scene {
             this.audio.resume();
         }
     }
-
+    playReboteSound(bola, mano) {
+        console.log("Rebote!"); // Verifica que se imprima esto en la consola al colisionar
+        this.reboteSound.play();
+    }
     update() {
         this.bola.rotation += 0.01;
         this.bola2.rotation += 0.01;
@@ -439,8 +511,21 @@ class Nivel2 extends Phaser.Scene {
 
         this.bola.body.velocity.x = vx;
         this.bola.body.velocity.y = vy;
-        this.physics.add.collider(this.bola, this.mano1);
-        this.physics.add.collider(this.bola, this.mano2);
+
+        this.physics.add.collider(
+            this.bola,
+            this.mano1,
+            this.playReboteSound,
+            null,
+            this
+        );
+        this.physics.add.collider(
+            this.bola,
+            this.mano2,
+            this.playReboteSound,
+            null,
+            this
+        );
 
         this.alguienGano = false;
     }
@@ -462,8 +547,21 @@ class Nivel2 extends Phaser.Scene {
 
         this.bola2.body.velocity.x = vx + 20;
         this.bola2.body.velocity.y = vy + 30;
-        this.physics.add.collider(this.bola2, this.mano1);
-        this.physics.add.collider(this.bola2, this.mano2);
+        // Configurar colisiones
+        this.physics.add.collider(
+            this.bola2,
+            this.mano1,
+            this.playReboteSound,
+            null,
+            this
+        );
+        this.physics.add.collider(
+            this.bola2,
+            this.mano2,
+            this.playReboteSound,
+            null,
+            this
+        );
         this.alguienGano = false;
     }
     pintarMarcador() {
