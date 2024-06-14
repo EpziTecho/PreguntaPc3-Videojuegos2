@@ -3,6 +3,12 @@ class Escena extends Phaser.Scene {
         super({ key: "Escena" });
         this.limitePuntos = 5;
         this.audio = null; // Variable global para el audio
+        this.mano2Direction = 0; // Dirección actual de mano2
+        this.mano2Speed = 5; // Velocidad de movimiento de mano2
+        this.changeDirectionTimer = 0; // Temporizador para cambio de dirección
+        this.directionChangeInterval = 500; // Intervalo en ms para cambiar la dirección
+        this.vidas = 4; // Número inicial de vidas
+        this.textoVidas = null; // Objeto de texto para mostrar las vidas
     }
 
     preload() {
@@ -24,6 +30,7 @@ class Escena extends Phaser.Scene {
         this.input.addPointer();
 
         this.add.image(480, 320, "fondo");
+        this.pintarVidas();
         this.bola = this.physics.add.sprite(480, 320, "bola");
 
         this.anims.create({
@@ -125,7 +132,11 @@ class Escena extends Phaser.Scene {
         console.log("Rebote!"); // Verifica que se imprima esto en la consola al colisionar
         this.reboteSound.play();
     }
-    update() {
+    update(time, delta) {
+        if (this.bola.x < 0) {
+            // Condición de ejemplo
+            this.perderVida();
+        }
         this.bola.rotation += 0.01;
 
         if (this.bola.x < 0 && this.alguienGano === false) {
@@ -156,19 +167,41 @@ class Escena extends Phaser.Scene {
             this.mano1.y = this.mano1.y + 5;
         }
 
-        //movimientos del segundo jugador
-        if (
-            this.cursors.up.isDown ||
-            this.mano2.getData("direccionVertical") === -1
-        ) {
-            this.mano2.y = this.mano2.y - 5;
-        } else if (
-            this.cursors.down.isDown ||
-            this.mano2.getData("direccionVertical") === 1
-        ) {
-            this.mano2.y = this.mano2.y + 5;
+        if (this.changeDirectionTimer > this.directionChangeInterval) {
+            this.mano2Direction = Math.random() < 0.5 ? -1 : 1; // Cambia la dirección aleatoriamente a -1 o 1
+            this.changeDirectionTimer = 0; // Reiniciar el temporizador
+        } else {
+            this.changeDirectionTimer += delta; // Incrementar el temporizador
+        }
+
+        // Mover la mano2 basado en la dirección aleatoria
+        if (this.mano2.y > 60 && this.mano2.y < 560) {
+            // Asegúrate de que la mano2 no salga de los límites
+            this.mano2.y += this.mano2Direction * this.mano2Speed;
+        } else if (this.mano2.y <= 60) {
+            this.mano2.y += this.mano2Speed; // Corregir si está demasiado arriba
+        } else if (this.mano2.y >= 560) {
+            this.mano2.y -= this.mano2Speed; // Corregir si está demasiado abajo
         }
         this.revisarPuntaje();
+    }
+    pintarVidas() {
+        if (this.textoVidas) {
+            this.textoVidas.destroy(); // Eliminar el texto antiguo para crear uno nuevo
+        }
+        this.textoVidas = this.add.text(100, 10, "Vidas: " + this.vidas, {
+            fontSize: "32px",
+            fill: "#FFFFFF",
+            fontStyle: "bold",
+        });
+    }
+    perderVida() {
+        this.vidas -= 1;
+        this.pintarVidas();
+
+        if (this.vidas <= 0) {
+            this.ganador("NPC GANA");
+        }
     }
     colocarPelota() {
         const velocidad = 500;
