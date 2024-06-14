@@ -9,6 +9,8 @@ class Escena extends Phaser.Scene {
         this.directionChangeInterval = 500; // Intervalo en ms para cambiar la dirección
         this.vidas = 4; // Número inicial de vidas
         this.textoVidas = null; // Objeto de texto para mostrar las vidas
+        this.lastCommandTime = 0;
+        this.commandCooldown = 0; // 1 segundo entre comandos
     }
 
     preload() {
@@ -25,6 +27,7 @@ class Escena extends Phaser.Scene {
     }
 
     create() {
+        this.initializeVoiceControl();
         this.input.addPointer();
         this.input.addPointer();
         this.input.addPointer();
@@ -126,6 +129,52 @@ class Escena extends Phaser.Scene {
             this.audio.play();
         } else {
             this.audio.resume();
+        }
+    }
+    initializeVoiceControl() {
+        if ("webkitSpeechRecognition" in window) {
+            const recognition = new window.webkitSpeechRecognition();
+            recognition.lang = "es-ES";
+            recognition.continuous = true;
+            recognition.interimResults = false;
+
+            recognition.onresult = (event) => {
+                const last = event.results.length - 1;
+                const command = event.results[last][0].transcript
+                    .trim()
+                    .toLowerCase();
+
+                console.log("Comando de voz:", command);
+                this.processVoiceCommand(command);
+            };
+
+            recognition.onerror = (event) => {
+                console.error(
+                    "Error en el reconocimiento de voz:",
+                    event.error
+                );
+            };
+
+            recognition.start();
+        } else {
+            console.error("El navegador no soporta la Web Speech API");
+        }
+    }
+
+    processVoiceCommand(command) {
+        const step = 100; // Este es el paso que la mano se moverá hacia arriba o hacia abajo.
+        if (command.includes("arriba")) {
+            // Mover la mano hacia arriba, pero prevenir que se mueva más allá del borde superior.
+            this.mano1.y = Math.max(
+                this.mano1.y - step,
+                this.mano1.displayHeight / 2
+            );
+        } else if (command.includes("abajo")) {
+            // Mover la mano hacia abajo, pero prevenir que se mueva más allá del borde inferior.
+            this.mano1.y = Math.min(
+                this.mano1.y + step,
+                this.game.config.height - this.mano1.displayHeight / 2
+            );
         }
     }
     playReboteSound(bola, mano) {
