@@ -21,14 +21,14 @@ class Portada extends Phaser.Scene {
         this.menuMusic = this.sound.add("music", { loop: true, volume: 0.5 });
         this.menuMusic.play();
 
-        // Añadir título del juego
-        /* this.add
-            .text(480, 100, "GALACTIC PING PONG", {
-                font: "40px Arial bold",
+        // Credito
+        this.add
+            .text(480, 550, "Diseñado por Sergio Alexander Huayllas", {
+                font: "14px Arial bold",
                 fill: "white",
                 backgroundColor: "#000000",
             })
-            .setOrigin(0.5);*/
+            .setOrigin(0.5);
 
         // Añadir botones con espacio incrementado
         this.crearBoton(
@@ -52,6 +52,72 @@ class Portada extends Phaser.Scene {
             },
             0.3
         ); // Redimensionar botón de créditos
+    }
+
+    crearBoton(x, y, imagen, accion, scale = 1) {
+        let btn = this.add.image(x, y, imagen).setInteractive();
+        btn.setScale(scale); // Ajustar la escala del botón
+        btn.on("pointerdown", accion);
+        btn.on("pointerover", () => {
+            btn.setScale(scale * 1.1); // Hacer el botón un poco más grande al pasar el ratón
+            btn.setTint(0xcccccc); // Cambiar el color a un gris claro
+        });
+        btn.on("pointerout", () => {
+            btn.setScale(scale); // Restaurar el tamaño original
+            btn.clearTint(); // Eliminar el tintado
+        });
+    }
+}
+class Creditos extends Phaser.Scene {
+    constructor() {
+        super({ key: "Creditos" });
+    }
+
+    preload() {
+        this.load.image("portada", "img/portada.png");
+        this.load.audio("music", "sound/pingpongmusic.mp3");
+        //this.load.image("botonInicio", "img/startgame.png");
+        // this.load.image("botonCreditos", "img/creditos.png");
+        this.load.image("botonSalir", "img/salir.png");
+        // this.load.image("titulo", "img/ssd.png");
+    }
+
+    create() {
+        // Añadir fondo
+        this.add.image(480, 320, "portada");
+        //this.add.image(480, 120, "titulo");
+
+        // Añadir música de fondo
+        this.menuMusic = this.sound.add("music", { loop: true, volume: 0.5 });
+        this.menuMusic.play();
+
+        // Credito
+        this.add
+            .text(480, 150, "CREDITOS", {
+                font: "40px Arial bold",
+                fill: "white",
+                backgroundColor: "#000000",
+            })
+            .setOrigin(0.5);
+        // Credito
+        this.add
+            .text(490, 220, "Sergio Alexander Huayllas        U19221872", {
+                font: "16px Arial bold",
+                fill: "white",
+                backgroundColor: "#000000",
+            })
+            .setOrigin(0.5);
+        // Añadir botones con espacio incrementado
+        this.crearBoton(
+            480,
+            550,
+            "botonSalir",
+            () => {
+                this.menuMusic.stop();
+                this.scene.start("Portada");
+            },
+            0.3
+        );
     }
 
     crearBoton(x, y, imagen, accion, scale = 1) {
@@ -823,11 +889,12 @@ const config = {
     scene: Portada,
     Escena,
     Nivel2,
+    Creditos,
 
     physics: {
         default: "arcade",
     },
-    scene: [Portada, Escena, Nivel2],
+    scene: [Portada, Escena, Nivel2, Creditos],
 };
 
 new Phaser.Game(config);
