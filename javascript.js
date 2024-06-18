@@ -1,3 +1,74 @@
+class Portada extends Phaser.Scene {
+    constructor() {
+        super({ key: "Portada" });
+    }
+
+    preload() {
+        this.load.image("portada", "img/portada.png");
+        this.load.audio("music", "sound/pingpongmusic.mp3");
+        this.load.image("botonInicio", "img/startgame.png");
+        this.load.image("botonCreditos", "img/creditos.png");
+        this.load.image("botonSalir", "img/salir.png");
+        this.load.image("titulo", "img/ssd.png");
+    }
+
+    create() {
+        // Añadir fondo
+        this.add.image(480, 320, "portada");
+        this.add.image(480, 120, "titulo");
+
+        // Añadir música de fondo
+        this.menuMusic = this.sound.add("music", { loop: true, volume: 0.5 });
+        this.menuMusic.play();
+
+        // Añadir título del juego
+        /* this.add
+            .text(480, 100, "GALACTIC PING PONG", {
+                font: "40px Arial bold",
+                fill: "white",
+                backgroundColor: "#000000",
+            })
+            .setOrigin(0.5);*/
+
+        // Añadir botones con espacio incrementado
+        this.crearBoton(
+            350,
+            450,
+            "botonInicio",
+            () => {
+                this.menuMusic.stop();
+                this.scene.start("Escena");
+            },
+            0.3
+        ); // Redimensionar botón de inicio
+
+        this.crearBoton(
+            620,
+            450,
+            "botonCreditos",
+            () => {
+                this.menuMusic.stop();
+                this.scene.start("Creditos");
+            },
+            0.3
+        ); // Redimensionar botón de créditos
+    }
+
+    crearBoton(x, y, imagen, accion, scale = 1) {
+        let btn = this.add.image(x, y, imagen).setInteractive();
+        btn.setScale(scale); // Ajustar la escala del botón
+        btn.on("pointerdown", accion);
+        btn.on("pointerover", () => {
+            btn.setScale(scale * 1.1); // Hacer el botón un poco más grande al pasar el ratón
+            btn.setTint(0xcccccc); // Cambiar el color a un gris claro
+        });
+        btn.on("pointerout", () => {
+            btn.setScale(scale); // Restaurar el tamaño original
+            btn.clearTint(); // Eliminar el tintado
+        });
+    }
+}
+
 class Escena extends Phaser.Scene {
     constructor() {
         super({ key: "Escena" });
@@ -24,6 +95,7 @@ class Escena extends Phaser.Scene {
         this.load.image("mano2", "img/mano2.png");
         this.load.audio("audio", "sound/pingpongmusic.mp3");
         this.load.audio("rebote", "sound/bounce.mp3");
+        this.load.image("salida", "img/salir.png");
     }
 
     create() {
@@ -34,6 +106,17 @@ class Escena extends Phaser.Scene {
 
         this.add.image(480, 320, "fondo");
         this.pintarVidas();
+
+        this.crearBoton(
+            480,
+            550,
+            "salida",
+            () => {
+                this.audio.stop();
+                this.scene.start("Portada");
+            },
+            0.3
+        );
         this.bola = this.physics.add.sprite(480, 320, "bola");
 
         this.anims.create({
@@ -360,6 +443,19 @@ class Escena extends Phaser.Scene {
 
         upbtn.on("pointerup", () => {
             player.setData("direccionVertical", 0);
+        });
+    }
+    crearBoton(x, y, imagen, accion, scale = 1) {
+        let btn = this.add.image(x, y, imagen).setInteractive();
+        btn.setScale(scale); // Ajustar la escala del botón
+        btn.on("pointerdown", accion);
+        btn.on("pointerover", () => {
+            btn.setScale(scale * 1.1); // Hacer el botón un poco más grande al pasar el ratón
+            btn.setTint(0xcccccc); // Cambiar el color a un gris claro
+        });
+        btn.on("pointerout", () => {
+            btn.setScale(scale); // Restaurar el tamaño original
+            btn.clearTint(); // Eliminar el tintado
         });
     }
 }
@@ -724,13 +820,14 @@ const config = {
     type: Phaser.AUTO,
     width: 960,
     height: 640,
-    scene: Escena,
+    scene: Portada,
+    Escena,
     Nivel2,
 
     physics: {
         default: "arcade",
     },
-    scene: [Escena, Nivel2],
+    scene: [Portada, Escena, Nivel2],
 };
 
 new Phaser.Game(config);
